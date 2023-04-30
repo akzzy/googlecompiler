@@ -19,6 +19,7 @@ jobs:
             bison \
             build-essential \
             ccache \
+            curl \
             flex \
             gcc-arm-linux-gnueabi \
             gcc-aarch64-linux-gnu \
@@ -26,7 +27,7 @@ jobs:
             libssl-dev \
             lzop \
             make \
-            python \
+            python-is-python3 \
             zlib1g-dev
 
           git clone https://github.com/akhilnarang/scripts.git
@@ -49,3 +50,4 @@ jobs:
         run: |
           cd android-kernel/kernel
           make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CC=clang-${CLANG_VERSION} -j$(nproc)
+
