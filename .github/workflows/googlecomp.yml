@@ -11,11 +11,41 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build Kernel
+      - name: Install dependencies and configure environment
         run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            bc \
+            bison \
+            build-essential \
+            ccache \
+            flex \
+            gcc-arm-linux-gnueabi \
+            gcc-aarch64-linux-gnu \
+            git \
+            libssl-dev \
+            lzop \
+            make \
+            python \
+            zlib1g-dev
+
+          git clone https://github.com/akhilnarang/scripts.git
+          cd scripts
+          bash setup/android_build_env.sh
+          cd ..
+
           mkdir android-kernel
           cd android-kernel
-          repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-crosshatch-4.9-android12
-          repo sync -j$(nproc)
-          cd kernel
+
+          # Install the repo tool
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ./repo
+          chmod +x ./repo
+
+          # Initialize the repository and sync the source code
+          ./repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-crosshatch-4.9-android12
+          ./repo sync -j$(nproc)
+
+      - name: Build Kernel
+        run: |
+          cd android-kernel/kernel
           make O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CC=clang-${CLANG_VERSION} -j$(nproc)
