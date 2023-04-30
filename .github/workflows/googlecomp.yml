@@ -1,0 +1,19 @@
+name: Clone Repository
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  clone-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      - name: build kernel
+        run: |
+          mkdir android-kernel
+          cd android-kernel
+          repo init -u https://android.googlesource.com/kernel/manifest -b android-msm-crosshatch-4.9-android12
+          build/build.sh
